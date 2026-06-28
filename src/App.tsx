@@ -201,7 +201,12 @@ const navLinks = [
 ];
 
 function scrollToSection(id: string, behavior: ScrollBehavior = 'smooth') {
-  document.getElementById(id)?.scrollIntoView({ block: 'start', behavior });
+  const target = document.getElementById(id);
+  if (!target) return;
+
+  const marginTop = Number.parseFloat(window.getComputedStyle(target).scrollMarginTop) || 0;
+  const top = target.getBoundingClientRect().top + window.scrollY - marginTop;
+  window.scrollTo({ top: Math.max(0, top), behavior });
 }
 
 function motionSafeBehavior(): ScrollBehavior {
@@ -228,7 +233,7 @@ function App() {
       const id = window.location.hash.slice(1);
       if (!id) return;
 
-      [0, 120, 360].forEach((delay) => {
+      [0, 120, 360, 720, 1200].forEach((delay) => {
         const timer = window.setTimeout(() => scrollToSection(id, 'auto'), delay);
         scrollTimers.push(timer);
       });
